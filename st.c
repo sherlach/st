@@ -16,6 +16,7 @@
 #include <termios.h>
 #include <unistd.h>
 #include <wchar.h>
+#include <time.h>
 
 #include "st.h"
 #include "win.h"
@@ -193,6 +194,7 @@ static void tsetscroll(int, int);
 static void tswapscreen(void);
 static void tsetmode(int, int, const int *, int);
 static int twrite(const char *, int, int);
+static int twrite_aborted = 0;
 static void tfulldirt(void);
 static void tcontrolcode(uchar );
 static void tdectest(char );
@@ -230,6 +232,31 @@ static const uchar utfbyte[UTF_SIZ + 1] = {0x80,    0, 0xC0, 0xE0, 0xF0};
 static const uchar utfmask[UTF_SIZ + 1] = {0xC0, 0x80, 0xE0, 0xF0, 0xF8};
 static const Rune utfmin[UTF_SIZ + 1] = {       0,    0,  0x80,  0x800,  0x10000};
 static const Rune utfmax[UTF_SIZ + 1] = {0x10FFFF, 0x7F, 0x7FF, 0xFFFF, 0x10FFFF};
+
+static int su = 0;
+struct timespec sutv;
+
+static void
+tsync_begin()
+{
+  clock_gettime(CLOCK_MONOTONIC, &sutv);
+  su = 1;
+}
+
+static void
+tsync_end()
+{
+  su = 0;
+}
+
+int
+tinsync(uint timeout) {
+  struct timespec now;
+  if (su && !clock_gettime(CLOCK_MONOTONIC, &now)
+         && TIMEDIFF(now, sutv) >= timeout)
+    su = 0;
+  return su;
+}
 
 ssize_t
 xwrite(int fd, const char *s, size_t len)
@@ -820,6 +847,8 @@ ttynew(const char *line, char *cmd, const char *out, char **args)
 	return cmdfd;
 }
 
+int ttyread_pending() { return twrite_aborted; }
+
 size_t
 ttyread(void)
 {
@@ -828,7 +857,7 @@ ttyread(void)
 	int ret, written;
 
 	/* append read bytes to unprocessed bytes */
-	ret = read(cmdfd, buf+buflen, LEN(buf)-buflen);
+  ret = twrite_aborted ? 1 : read(cmdfd, buf+buflen, LEN(buf)-buflen);
 
 	switch (ret) {
 	case 0:
@@ -836,7 +865,7 @@ ttyread(void)
 	case -1:
 		die("couldn't read from shell: %s\n", strerror(errno));
 	default:
-		buflen += ret;
+    buflen += twrite_aborted ? 0 : ret;
 		written = twrite(buf, buflen, 0);
 		buflen -= written;
 		/* keep any incomplete UTF-8 byte sequence for the next call */
@@ -996,6 +1025,7 @@ tsetdirtattr(int attr)
 void
 tfulldirt(void)
 {
+  tsync_end();
 	tsetdirt(0, term.row-1);
 }
 
@@ -1905,6 +1935,12 @@ strhandle(void)
 		xsettitle(strescseq.args[0]);
 		return;
 	case 'P': /* DCS -- Device Control String */
+    /* https://gitlab.com/gnachman/iterm2/-/wikis/synchronized-updates-spec */
+   if (strstr(strescseq.buf, "=1s") == strescseq.buf)
+     tsync_begin();  /* BSU */
+   else if (strstr(strescseq.buf, "=2s") == strescseq.buf)
+     tsync_end();  /* ESU */
+    return;
 	case '_': /* APC -- Application Program Command */
 	case '^': /* PM -- Privacy Message */
 		return;
@@ -2446,6 +2482,9 @@ twrite(const char *buf, int buflen, int show_ctrl)
 	Rune u;
 	int n;
 
+  int su0 = su;
+  twrite_aborted = 0;
+
 	for (n = 0; n < buflen; n += charsize) {
 		if (IS_SET(MODE_UTF8)) {
 			/* process a complete utf8 char */
@@ -2456,6 +2495,11 @@ twrite(const char *buf, int buflen, int show_ctrl)
 			u = buf[n] & 0xFF;
 			charsize = 1;
 		}
+    if (su0 && !su) { 
+      /*XXX since su0 = su, when does this occur?*/
+      twrite_aborted = 1;
+      break; // ESU - allow rendering before a new BSU
+    }
 		if (show_ctrl && ISCONTROL(u)) {
 			if (u & 0x80) {
 				u &= 0x7f;

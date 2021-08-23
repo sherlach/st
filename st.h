@@ -90,9 +90,11 @@ int tattrset(int);
 void tnew(int, int);
 void tresize(int, int);
 void tsetdirtattr(int);
+int tinsync(uint);
 void ttyhangup(void);
 int ttynew(const char *, char *, const char *, char **);
 size_t ttyread(void);
+int ttyread_pending();
 void ttyresize(int, int);
 void ttywrite(const char *, size_t, int);
 
@@ -123,3 +125,4 @@ extern char *termname;
 extern unsigned int tabspaces;
 extern unsigned int defaultfg;
 extern unsigned int defaultbg;
+extern float alpha;
