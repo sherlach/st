@@ -1,6 +1,8 @@
 # patching
 patches were applied in # order
 
+patch 11 wasn't working so I used an alternate version
+
 ## still to apply
 10-19
 

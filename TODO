@@ -18,6 +18,10 @@ drawing
 bugs
 ----
 
+* neovim reports unknown string ESC]11 (see issue 10476)
+  desipte OSC11 patch being applied...
+  "reporting their configured colors back to the application"
+  doesn't happen yet
 * fix shift up/down (shift selection in emacs)
 * remove DEC test sequence when appropriate
 
@@ -25,6 +29,7 @@ misc
 ----
 
 * manual installs to wrong location for Gentoo
+* all kinds of weird errors with neovim
 
     $ grep -nE 'XXX|TODO' st.c
 

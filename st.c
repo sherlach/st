@@ -1999,15 +1999,25 @@ strhandle(void)
 			}
 			return;
 		case 4: /* color set */
-			if (narg < 3)
-				break;
-			p = strescseq.args[2];
+    case 10: /* foreground set */
+    case 11: /* background set */
+    case 12: /* cursor color */
+		  //break;
+			p = strescseq.args[((par == 4) ? 2 : 1)];
 			/* FALLTHROUGH */
 		case 104: /* color reset, here p = NULL */
-			j = (narg > 1) ? atoi(strescseq.args[1]) : -1;
+     if (par == 10) // XXX this looks janky
+       j = defaultfg;
+     else if (par == 11)
+       j = defaultbg;
+     else if (par == 12)
+       j = defaultcs;
+     else
+       j = (narg > 1) ? atoi(strescseq.args[1]) : -1;
 			if (xsetcolorname(j, p)) {
 				if (par == 104 && narg <= 1)
 					return; /* color reset without parameter */
+        printf("par: %d\n", par);
 				fprintf(stderr, "erresc: invalid color j=%d, p=%s\n",
 				        j, p ? p : "(null)");
 			} else {

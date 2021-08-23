@@ -8,6 +8,14 @@
 static char *font = "Liberation Mono:pixelsize=12:antialias=true:autohint=true";
 static int borderpx = 2;
 
+/* Spare fonts */
+static char *font2[] = {
+/* "Inconsolata for Powerline:pixelsize=12:antialias=true:autoh
+    int=true", */
+/* "Hack Nerd Font Mono:pixelsize=11:antialias=true:autohint=tr
+    ue", */
+};
+
 /*
  * What program is execed by st depends of these precedence rules:
  * 1: program passed with -e
@@ -130,6 +138,7 @@ static const char *colorname[] = {
 	"#cccccc",
 	"#555555",
   "black",
+  "gray90",
 };
 
 
@@ -137,9 +146,9 @@ static const char *colorname[] = {
  * Default colors (colorname index)
  * foreground, background, cursor, reverse cursor
  */
-unsigned int defaultfg = 7;
-unsigned int defaultbg = 0;
-static unsigned int defaultcs = 256;
+unsigned int defaultfg = 7; //7
+unsigned int defaultbg = 0; //0
+unsigned int defaultcs = 256;
 static unsigned int defaultrcs = 257;
 unsigned int bg = 16, bgUnfocused = 16;
 
