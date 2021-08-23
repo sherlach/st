@@ -141,7 +141,7 @@ unsigned int defaultfg = 7;
 unsigned int defaultbg = 0;
 static unsigned int defaultcs = 256;
 static unsigned int defaultrcs = 257;
-unsigned int bg = 17, bgUnfocused = 17;
+unsigned int bg = 16, bgUnfocused = 16;
 
 /*
  * Default shape of cursor
@@ -183,8 +183,11 @@ static uint forcemousemod = ShiftMask;
  * Internal mouse shortcuts.
  * Beware that overloading Button1 will disable the selection.
  */
+const unsigned int mousescrollincrement = 1;
 static MouseShortcut mshortcuts[] = {
 	/* mask                 button   function        argument       release */
+	{ ShiftMask,            Button4, kscrollup,      {.i = mousescrollincrement} },
+	{ ShiftMask,            Button5, kscrolldown,    {.i = mousescrollincrement} },
 	{ XK_ANY_MOD,           Button2, selpaste,       {.i = 0},      1 },
 	{ ShiftMask,            Button4, ttysend,        {.s = "\033[5;2~"} },
 	{ XK_ANY_MOD,           Button4, ttysend,        {.s = "\031"} },
