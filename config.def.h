@@ -1,8 +1,8 @@
 /* See LICENSE file for copyright and license details. */
+// TODO clean up this file so it is easier to find and edit
 
+/* GENERAL */
 /*
- * appearance
- *
  * font: see http://freedesktop.org/software/fontconfig/fontconfig-user.html
  */
 static char *font = "Liberation Mono:pixelsize=15:antialias=true:autohint=true";
@@ -80,21 +80,45 @@ static unsigned int blinktimeout = 800;
  */
 static unsigned int cursorthickness = 2;
 
+/* BELL */
 /*
- * bell volume. It must be a value between -100 and 100. Use 0 for disabling
- * it
+ * bell volume. It must be a value between -100 and 100.
+ * Use 0 to disable it.
  */
 static int bellvolume = 0;
 
+/* 0: simple bell: invert cells. */
+/* 1: advanced bell: draw a circle */
+static int vbellmode = 0;
 /* visual-bell timeout in ms (0 to disable visual-bell) */
 static int vbelltimeout = 150;
 
-/* choose predefined visual-bell cells to inverse, or define your own logic */
-#define VBCELL x==0 || x==right || y==0 || y==bottom  /* border */
-// #define VBCELL 1  /* all cells - whole screen */
-// #define VBCELL y==bottom && x>right-2  /* bottom-right */
+/*
+ * if vbellmode = 0: inversion uses following formula:
+ * choose one of the following inversion formulae,
+ * or define your own logic
+ */
+//#define VBCELL x==0 || x==right || y==0 || y==bottom  /* border */
+//#define VBCELL 1  /* all cells - whole screen */
+#define VBCELL y==bottom && x>right-2  /* bottom-right */
+
+/*
+ * if vbellmode = 1: circle takes parameters:
+ *
+ * base and outline colors: (colorname index - see below)
+ * radius: relative to window width, or if negative: relative to cell-width
+ * position: relative to window width/height (0 and 1 are at the edges)
+ */
+static int vbellcolor = 3;
+static int vbellcolor_outline = 1;
+
+static float vbellradius = 0.03;
+
+static float vbellx = 0.5;
+static float vbelly = 0.5;
 
 
+/* MORE SETTINGS */
 /* default TERM value */
 char *termname = "st-256color";
 
@@ -117,6 +141,7 @@ unsigned int tabspaces = 8;
 
 //#define HIS_SIZ 2000 /* amount of history to save */
 
+/* COLOURS */
 /* bg opacity */
 float alpha = 1.0, alphaUnfocused = 0.8;
 
@@ -178,13 +203,13 @@ static unsigned int cursorshape = 2;
 static unsigned int cols = 80;
 static unsigned int rows = 24;
 
+/* MOUSE */
 /*
  * Default colour and shape of the mouse cursor
  */
 static unsigned int mouseshape = XC_xterm;
 static unsigned int mousefg = 7;
 static unsigned int mousebg = 0;
-
 /*
  * Color used to display font attributes when fontconfig selected a font which
  * doesn't match the ones requested.
@@ -214,7 +239,7 @@ static MouseShortcut mshortcuts[] = {
 	{ XK_ANY_MOD,           Button5, ttysend,        {.s = "\005"} },
 };
 
-/* Internal keyboard shortcuts. */
+/* KEYBOARD */
 #define MODKEY Mod1Mask
 #define TERMMOD (ControlMask|ShiftMask)
 

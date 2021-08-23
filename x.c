@@ -198,8 +198,12 @@ static int match(uint, uint);
 static int vbellset = 0; /* 1 during vbell, 0 otherwise */
 static struct timespec lastvbell = {0};
 
-static int isvbellcell(int x, int y);
+static int isvbellcell(int, int);
 static void vbellbegin(void);
+
+static void xfillcircle(int, int, int, uint);
+static void xdrawvbell(void);
+
 
 static void run(void);
 static void usage(void);
@@ -1791,7 +1795,7 @@ int
 isvbellcell(int x, int y)
 {
   int right = win.tw / win.cw - 1, bottom = win.th / win.ch - 1;
-  return VBCELL;  /* logic condition defined in config.h */
+  return vbellmode == 0 && (VBCELL);  /* logic defined in config.h */
 }
 
 void
@@ -1802,6 +1806,22 @@ vbellbegin() {
   vbellset = 1;
   redraw();
   XFlush(xw.dpy);
+}
+
+void
+xfillcircle(int x, int y, int r, uint color_ix)
+{
+  XSetForeground(xw.dpy, dc.gc, dc.col[color_ix].pixel);
+  XFillArc(xw.dpy, xw.buf, dc.gc, x - r, y - r, r * 2, r * 2, 0, 360*64);
+}
+
+void
+xdrawvbell() {
+  int r = round(vbellradius * (vbellradius > 0 ? win.w : -win.cw));
+  int x = borderpx + r + vbellx * (win.tw - 2 * r);
+  int y = borderpx + r + vbelly * (win.th - 2 * r);
+  xfillcircle(x, y, r, vbellcolor_outline);
+  xfillcircle(x, y, r / 1.2, vbellcolor); /* 1.2 - an artistic choice */
 }
 
 int
@@ -1848,6 +1868,9 @@ xdrawline(Line line, int x1, int y1, int x2)
 void
 xfinishdraw(void)
 {
+  if (vbellset && vbellmode == 1)
+    xdrawvbell();
+
 	XCopyArea(xw.dpy, xw.buf, xw.win, dc.gc, 0, 0, win.w,
 			win.h, 0, 0);
 	XSetForeground(xw.dpy, dc.gc,
