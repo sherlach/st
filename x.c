@@ -194,6 +194,13 @@ static void mousereport(XEvent *);
 static char *kmap(KeySym, uint);
 static int match(uint, uint);
 
+/* visual bell definitions */
+static int vbellset = 0; /* 1 during vbell, 0 otherwise */
+static struct timespec lastvbell = {0};
+
+static int isvbellcell(int x, int y);
+static void vbellbegin(void);
+
 static void run(void);
 static void usage(void);
 
@@ -1781,6 +1788,23 @@ xpushtitle(void)
 }
 
 int
+isvbellcell(int x, int y)
+{
+  int right = win.tw / win.cw - 1, bottom = win.th / win.ch - 1;
+  return VBCELL;  /* logic condition defined in config.h */
+}
+
+void
+vbellbegin() {
+  clock_gettime(CLOCK_MONOTONIC, &lastvbell);
+  if (vbellset)
+    return;
+  vbellset = 1;
+  redraw();
+  XFlush(xw.dpy);
+}
+
+int
 xstartdraw(void)
 {
   if (IS_SET(MODE_VISIBLE))
@@ -1803,6 +1827,8 @@ xdrawline(Line line, int x1, int y1, int x2)
 			continue;
 		if (selected(x, y1))
 			new.mode ^= ATTR_REVERSE;
+    if (vbellset && isvbellcell(x, y1))
+      new.mode ^= ATTR_REVERSE;
 		if (i > 0 && ATTRCMP(base, new)) {
 			xdrawglyphfontspecs(specs, base, i, ox, y1);
 			specs += i;
@@ -1903,6 +1929,8 @@ xbell(void)
 		xseturgency(1);
 	if (bellvolume)
 		XkbBell(xw.dpy, xw.win, bellvolume, (Atom)NULL);
+  if (vbelltimeout)
+    vbellbegin();
 }
 
 void
@@ -2171,10 +2199,20 @@ run(void)
 			}
 		}
 
-		draw();
-		XFlush(xw.dpy);
-		drawing = 0;
-	}
+    if (vbellset) {
+      double remain = vbelltimeout - TIMEDIFF(now, lastvbell);
+      if (remain <= 0) {
+        vbellset = 0;
+        redraw();
+      } else if (timeout < 0 || remain < timeout) {
+        timeout = remain;
+      }
+    }
+
+    draw();
+    XFlush(xw.dpy);
+    drawing = 0;
+  }
 }
 
 void
