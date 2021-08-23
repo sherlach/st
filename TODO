@@ -24,5 +24,7 @@ bugs
 misc
 ----
 
+* manual installs to wrong location for Gentoo
+
     $ grep -nE 'XXX|TODO' st.c
 
