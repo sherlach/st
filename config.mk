@@ -3,6 +3,9 @@ VERSION = 0.8.4
 
 # Customize below to fit your system
 
+# cc
+CC = gcc
+
 # paths
 PREFIX = /usr
 #PREFIX = /usr/local

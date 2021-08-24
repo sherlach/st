@@ -2345,6 +2345,7 @@ run:
 	xinit(cols, rows);
 	xsetenv();
 	selinit();
+  // on error, 1 is returned
 	chdir(opt_dir);
 	run();
 
