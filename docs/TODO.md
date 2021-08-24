@@ -28,6 +28,7 @@ bugs
 misc
 ----
 
+* consider moving source files to a src/ directory
 * all kinds of weird errors with neovim
 * grep all files for XXX|TODO
 ```

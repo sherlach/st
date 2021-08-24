@@ -4,11 +4,18 @@
 #ifndef H_CONFIG__
 #define H_CONFIG__
 
+
+
 #ifdef ST
+
 /* number of lines of history to save */
 #define HISTORY_SIZE 2000
+
 #undef ST
 #endif
+
+
+
 
 #ifdef X
 /* GENERAL */
@@ -285,6 +292,9 @@ static Shortcut shortcuts[] = {
   { ShiftMask,            XK_Page_Down,   kscrolldown,    {.i = -1} },
 };
 
+
+
+/* ADVANCED */
 /*
  * Special keys (change & recompile st.info accordingly)
  *
