@@ -1,6 +1,17 @@
 /* See LICENSE file for copyright and license details. */
 // TODO clean up this file so it is easier to find and edit
+// and has less janky C-isms
 
+#ifndef H_CONFIG__
+#define H_CONFIG__
+
+#ifdef ST
+/* number of lines(?) of history to save */
+#define HISTORY_SIZE 2000
+#undef ST
+#endif
+
+#ifdef X
 /* GENERAL */
 /*
  * font: see http://freedesktop.org/software/fontconfig/fontconfig-user.html
@@ -546,3 +557,5 @@ static char ascii_printable[] =
 	" !\"#$%&'()*+,-./0123456789:;<=>?"
 	"@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_"
 	"`abcdefghijklmnopqrstuvwxyz{|}~";
+#endif
+#endif

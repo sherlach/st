@@ -36,9 +36,9 @@
 #define ESC_ARG_SIZ   16
 #define STR_BUF_SIZ   ESC_BUF_SIZ
 #define STR_ARG_SIZ   ESC_ARG_SIZ
-#define HIS_SIZ       2000
-//HIS_SIZ is the history amount saved
-// TODO put this in config.def.h
+
+#define ST
+#include "config.h" //for history size
 
 /* macros */
 #define IS_SET(flag)		((term.mode & (flag)) != 0)
@@ -49,10 +49,10 @@
 #define STRESCARGREST(n) ((n) == 0 ? strescseq.buf : strescseq.argp[(n)-1] + 1)
 #define STRESCARGJUST(n) (*(strescseq.argp[n]) = '\0', STRESCARGREST(n))
 #define TLINE(y)   ((y) < term.scr ? term.hist[((y) + term.histi - \
-       term.scr + HIS_SIZ + 1) % HIS_SIZ] : \
+       term.scr + HISTORY_SIZE + 1) % HISTORY_SIZE] : \
        term.line[(y) - term.scr])
-#define TLINE_HIST(y) ((y) <= HIS_SIZ-term.row+2 ? term.hist[(y)] \
-       : term.line[(y-HIS_SIZ+term.row-3)])
+#define TLINE_HIST(y) ((y) <= HISTORY_SIZE-term.row+2 ? term.hist[(y)] \
+       : term.line[(y-HISTORY_SIZE+term.row-3)])
 
 enum term_mode {
 	MODE_WRAP        = 1 << 0,
@@ -126,7 +126,7 @@ typedef struct {
 	int col;            /* nb col */
 	Line *line;         /* screen */
 	Line *alt;          /* alternate screen */
-  Line hist[HIS_SIZ];  /* history buffer */
+  Line hist[HISTORY_SIZE];  /* history buffer */
   int histi;          /* history index */ 
   int scr;            /* scroll back */
 	int *dirty;         /* dirtyness of lines */
@@ -1151,7 +1151,7 @@ kscrollup(const Arg* a)
 
   if (n < 0)
     n = term.row + n;
-  if (term.scr < HIS_SIZ-n) {
+  if (term.scr < HISTORY_SIZE-n) {
     term.scr += n;
     selscroll(0, n);
     tfulldirt();
@@ -1167,7 +1167,7 @@ tscrolldown(int orig, int n, int copyhist)
 	LIMIT(n, 0, term.bot-orig+1);
 
   if (copyhist) {
-    term.histi = (term.histi - 1 + HIS_SIZ) % HIS_SIZ;
+    term.histi = (term.histi - 1 + HISTORY_SIZE) % HISTORY_SIZE;
     temp = term.hist[term.histi];
     term.hist[term.histi] = term.line[term.bot];
     term.line[term.bot] = temp;
@@ -1195,14 +1195,14 @@ tscrollup(int orig, int n, int copyhist)
 	LIMIT(n, 0, term.bot-orig+1);
 
   if (copyhist) {
-    term.histi = (term.histi+1) % HIS_SIZ;
+    term.histi = (term.histi+1) % HISTORY_SIZE;
     temp = term.hist[term.histi];
     term.hist[term.histi] = term.line[orig];
     term.line[orig] = temp;
   }
 
-  if (term.scr > 0 && term.scr < HIS_SIZ)
-    term.scr = MIN(term.scr+n, HIS_SIZ-1);
+  if (term.scr > 0 && term.scr < HISTORY_SIZE)
+    term.scr = MIN(term.scr+n, HISTORY_SIZE-1);
 
 	tclearregion(0, orig, term.col-1, orig+n-1);
 	tsetdirt(orig+n, term.bot);
@@ -2133,7 +2133,7 @@ externalpipe(const Arg *arg)
   /* ignore sigpipe for now, in case child exists early */
   oldsigpipe = signal(SIGPIPE, SIG_IGN);
   newline = 0;
-  for (n = 0; n <= HIS_SIZ + 2; n++) {
+  for (n = 0; n <= HISTORY_SIZE + 2; n++) {
     bp = TLINE_HIST(n);
     lastpos = MIN(tlinehistlen(n) + 1, term.col) - 1;
     if (lastpos < 0)
@@ -2741,7 +2741,7 @@ tresize(int col, int row)
 	term.dirty = xrealloc(term.dirty, row * sizeof(*term.dirty));
 	term.tabs = xrealloc(term.tabs, col * sizeof(*term.tabs));
 
-  for (i = 0; i < HIS_SIZ; i++) {
+  for (i = 0; i < HISTORY_SIZE; i++) {
     term.hist[i] = xrealloc(term.hist[i], col * sizeof(Glyph));
     for (j = mincol; j < col; j++) {
       term.hist[i][j] = term.c.attr;

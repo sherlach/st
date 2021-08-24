@@ -1,4 +1,6 @@
 /* See LICENSE for license details. */
+#ifndef ST_H__
+#define ST_H__
 
 #include <stdint.h>
 #include <sys/types.h>
@@ -145,3 +147,4 @@ extern unsigned int defaultbg;
 extern unsigned int defaultcs;
 extern const int boxdraw, boxdraw_bold, boxdraw_braille;
 extern float alpha, alphaUnfocused; // XXX is this cap consistent style?
+#endif

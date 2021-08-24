@@ -17,20 +17,10 @@ you can manually run `tic -sx st.info`.
 * Some programs don’t complain about the lacking st description and default to
   another terminal. In that case see the question about terminfo.
 
+## I would like to have utmp functionality by default
 
-## How do I scroll back up?
-
-* Using a terminal multiplexer.
-	* `st -e tmux` using C-b [
-	* `st -e screen` using C-a ESC
-* Using the excellent tool of [scroll](https://git.suckless.org/scroll/).
-* Using the scrollback [patch](https://st.suckless.org/patches/scrollback/).
-
-
-## I would like to have utmp and/or scroll functionality by default
-
-You can add the absolute patch of both programs in your config.h
-file. You only have to modify the value of utmp and scroll variables.
+You can add the absolute patch in your config.h file. 
+You only have to modify the value of utmp variable.
 
 
 ## Why doesn't the Del key work in some programs?
@@ -219,32 +209,3 @@ diff --git a/x.c b/x.c
  	XSetForeground(xw.dpy, dc.gc,
  			dc.col[IS_SET(MODE_REVERSE)?
  				defaultfg : defaultbg].pixel);
-
-
-## BadLength X error in Xft when trying to render emoji
-
-Xft makes st crash when rendering color emojis with the following error:
-
-"X Error of failed request:  BadLength (poly request too large or internal Xlib length error)"
-  Major opcode of failed request:  139 (RENDER)
-  Minor opcode of failed request:  20 (RenderAddGlyphs)
-  Serial number of failed request: 1595
-  Current serial number in output stream:  1818"
-
-This is a known bug in Xft (not st) which happens on some platforms and
-combination of particular fonts and fontconfig settings.
-
-See also:
-https://gitlab.freedesktop.org/xorg/lib/libxft/issues/6
-https://bugs.freedesktop.org/show_bug.cgi?id=107534
-https://bugzilla.redhat.com/show_bug.cgi?id=1498269
-
-The solution is to remove color emoji fonts or disable this in the fontconfig
-XML configuration.  As an ugly workaround (which may work only on newer
-fontconfig versions (FC_COLOR)), the following code can be used to mask color
-fonts:
-
-	FcPatternAddBool(fcpattern, FC_COLOR, FcFalse);
-
-Please don't bother reporting this bug to st, but notify the upstream Xft
-developers about fixing this bug.

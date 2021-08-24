@@ -62,6 +62,7 @@ static void zoomreset(const Arg *);
 static void ttysend(const Arg *);
 
 /* config.h for applying patches and the configuration. */
+#define X //include keybinds 
 #include "config.h"
 
 /* size of title stack */
