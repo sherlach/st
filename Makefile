@@ -8,6 +8,8 @@ SRC = st.c x.c boxdraw.c hb.c
 OBJ = $(SRC:.c=.o)
 DBG = -g
 
+DOC = docs/
+
 all: options st
 
 options:
@@ -38,8 +40,9 @@ clean:
 
 dist: clean
 	mkdir -p st-$(VERSION)
-	cp -R FAQ LEGACY TODO LICENSE Makefile README config.mk\
-		config.def.h st.info st.1 arg.h st.h win.h $(SRC)\
+	cp -R $(DOC)LICENSE.orig $(DOC)FAQ.md $(DOC)TODO.md \
+		LICENSE.md Makefile README.md config.mk\
+		config.def.h st.info $(DOC)st.1 arg.h st.h win.h $(SRC)\
 		st-$(VERSION)
 	tar -cf - st-$(VERSION) | gzip > st-$(VERSION).tar.gz
 	rm -rf st-$(VERSION)
@@ -49,7 +52,7 @@ install: st
 	cp -f st $(DESTDIR)$(PREFIX)/bin
 	chmod 755 $(DESTDIR)$(PREFIX)/bin/st
 	mkdir -p $(DESTDIR)$(MANPREFIX)/man1
-	sed "s/VERSION/$(VERSION)/g" < st.1 > $(DESTDIR)$(MANPREFIX)/man1/st.1
+	sed "s/VERSION/$(VERSION)/g" < $(DOC)st.1 > $(DESTDIR)$(MANPREFIX)/man1/st.1
 	chmod 644 $(DESTDIR)$(MANPREFIX)/man1/st.1
 	tic -sx st.info
 	@echo Please see the README file regarding the terminfo entry of st.
