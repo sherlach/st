@@ -1,10 +1,9 @@
 // TODO clean up this file so it is easier to find and edit
 // terms and has less janky C-isms
 
+
 #ifndef H_CONFIG__
 #define H_CONFIG__
-
-
 
 #ifdef ST
 
@@ -13,9 +12,6 @@
 
 #undef ST
 #endif
-
-
-
 
 #ifdef X
 /* GENERAL */
@@ -43,8 +39,6 @@ static char *font2[] = {
  */
 static char *shell = "/bin/sh";
 char *utmp = NULL;
-/* scroll program: to enable use a string like "scroll" */
-char *scroll = NULL;
 char *stty_args = "stty raw pass8 nl -echo -iexten -cstopb 38400";
 
 /* identification sequence returned in DA and DECID */
@@ -99,7 +93,6 @@ static unsigned int blinktimeout = 800;
 static unsigned int cursorthickness = 2;
 
 /* BOXDRAW */
-
 /*
  * 1: render most of the lines/blocks characters without using the font for
  *    perfect alignment between cells (U2500 - U259F except dashes/diagonals).
@@ -258,11 +251,11 @@ static uint forcemousemod = ShiftMask;
  * Internal mouse shortcuts.
  * Beware that overloading Button1 will disable the selection.
  */
-const unsigned int mousescrollincrement = 1;
+const unsigned int scrollspeed = 2;
 static MouseShortcut mshortcuts[] = {
 	/* mask                 button   function        argument       release */
-	{ ShiftMask,            Button4, kscrollup,      {.i = mousescrollincrement} },
-	{ ShiftMask,            Button5, kscrolldown,    {.i = mousescrollincrement} },
+  { XK_ANY_MOD,           Button4, kscrollup,      {.i = scrollspeed},      0, /* !alt */ -1 },
+  { XK_ANY_MOD,           Button5, kscrolldown,    {.i = scrollspeed},      0, /* !alt */ -1 },
 	{ XK_ANY_MOD,           Button2, selpaste,       {.i = 0},      1 },
 	{ ShiftMask,            Button4, ttysend,        {.s = "\033[5;2~"} },
 	{ XK_ANY_MOD,           Button4, ttysend,        {.s = "\031"} },
