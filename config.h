@@ -1,13 +1,11 @@
-/* See LICENSE file for copyright and license details. */
-
 // TODO clean up this file so it is easier to find and edit
-// and has less janky C-isms
+// terms and has less janky C-isms
 
 #ifndef H_CONFIG__
 #define H_CONFIG__
 
 #ifdef ST
-/* number of lines(?) of history to save */
+/* number of lines of history to save */
 #define HISTORY_SIZE 2000
 #undef ST
 #endif
@@ -166,8 +164,6 @@ char *termname = "st-256color";
  *	stty tabs
  */
 unsigned int tabspaces = 8;
-
-//#define HIS_SIZ 2000 /* amount of history to save */
 
 /* COLOURS */
 /* bg opacity */

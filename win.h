@@ -1,4 +1,3 @@
-/* See LICENSE for license details. */
 #ifndef WIN__H
 #define WIN__H
 

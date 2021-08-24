@@ -1,4 +1,3 @@
-/* See LICENSE for license details. */
 #ifndef ST_H__
 #define ST_H__
 

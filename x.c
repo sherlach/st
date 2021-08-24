@@ -1,4 +1,3 @@
-/* See LICENSE for license details. */
 #include <errno.h>
 #include <math.h>
 #include <limits.h>
@@ -2335,6 +2334,9 @@ run:
 
 	if (!opt_title)
 		opt_title = (opt_line || !opt_cmd) ? "st" : opt_cmd[0];
+	if (opt_dir && chdir(opt_dir)) {
+    fprintf(stderr, "warning: path \"%s\" invalid\n", opt_dir);
+  }
 
 	setlocale(LC_CTYPE, "");
 	XSetLocaleModifiers("");
@@ -2345,8 +2347,6 @@ run:
 	xinit(cols, rows);
 	xsetenv();
 	selinit();
-  // on error, 1 is returned
-	chdir(opt_dir);
 	run();
 
 	return 0;
