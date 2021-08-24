@@ -7,13 +7,15 @@ to do a lot of manual patching before you have an actually usable
 product. This repo should contain a copy with my preferred patches
 already loaded. See the `patches` directory for more detail.
 
+I am considering maintaining this myself over time so the code may
+eventually divert from its original.
 
 Requirements
 ------------
 In order to build st you need the Xlib and Harfbuzz header files.
 You should use the xft-bgra patch if you require emoji (available
-in the AUR prebuilt or as a manual patch elsewhere. gentoo users
-could find [this patch](https://github.com/sherlach/configs/gentooing/patches/x11-libs/libXft/2.patch) very useful.
+in the AUR prebuilt or as a manual patch elsewhere. Gentoo users
+could find [this patch](https://github.com/sherlach/configs/blob/master/gentooing/patches/x11-libs/libXft/2.patch) very useful.
 
 
 Installation
@@ -43,3 +45,5 @@ Credits
 -------
 Based on Aurélien APTEL <aurelien dot aptel at gmail dot com> bt source code.
 Based on Suckless' original ST and patches available via [their website.](https://st.suckless.org)
+
+Some ideas taken from [Luke Smith's fork](https://github.com/LukeSmithxyz/st)

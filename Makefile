@@ -36,7 +36,7 @@ st: $(OBJ)
 
 clean:
 	rm -f $(OBJ) st-$(VERSION).tar.gz
-	@echo manually rm st if you want to
+	@echo manually \`rm st\` if you want to
 
 dist: clean
 	mkdir -p st-$(VERSION)
