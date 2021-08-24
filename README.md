@@ -38,4 +38,4 @@ See the man page for additional details.
 Credits
 -------
 Based on Aurélien APTEL <aurelien dot aptel at gmail dot com> bt source code.
-Based on Suckless' original ST and patches. (Website)[st.suckless.org]
+Based on Suckless' original ST and patches. [Website](st.suckless.org)
