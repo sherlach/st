@@ -45,8 +45,6 @@
 #define ISCONTROLC1(c)		(BETWEEN(c, 0x80, 0x9f))
 #define ISCONTROL(c)		(ISCONTROLC0(c) || ISCONTROLC1(c))
 #define ISDELIM(u)		(u && wcschr(worddelimiters, u))
-#define STRESCARGREST(n) ((n) == 0 ? strescseq.buf : strescseq.argp[(n)-1] + 1)
-#define STRESCARGJUST(n) (*(strescseq.argp[n]) = '\0', STRESCARGREST(n))
 #define TLINE(y)   ((y) < term.scr ? term.hist[((y) + term.histi - \
        term.scr + HISTORY_SIZE + 1) % HISTORY_SIZE] : \
        term.line[(y) - term.scr])
@@ -162,7 +160,7 @@ typedef struct {
 	char *buf;             /* allocated raw string */
 	size_t siz;            /* allocation size */
 	size_t len;            /* raw string length */
-	char *argp[STR_ARG_SIZ]; /* pointers to the end of nth argument */
+	char *args[STR_ARG_SIZ]; /* pointers to the end of nth argument */
 	int narg;              /* nb of args */
 } STREscape;
 
@@ -2000,28 +1998,29 @@ strhandle(void)
 	term.esc &= ~(ESC_STR_END|ESC_STR);
   strescseq.buf[strescseq.len] = '\0';
 
+  strparse();
+  par = (narg = strescseq.narg) ? atoi(strescseq.args[0]) : 0;
+
 	switch (strescseq.type) {
 	case ']': /* OSC -- Operating System Command */
-    strparse();
-    par = (narg = strescseq.narg) ? atoi(STRESCARGJUST(0)) : 0;
 		switch (par) {
 		case 0:
 			if (narg > 1) {
-				xsettitle(STRESCARGREST(1), 0);
-				xseticontitle(STRESCARGREST(1));
+        xsettitle(strescseq.args[1], 0);
+				xseticontitle(strescseq.args[1]);
 			}
 			return;
 		case 1:
 			if (narg > 1)
-				xseticontitle(STRESCARGREST(1));
+        xseticontitle(strescseq.args[1]);
 			return;
 		case 2:
 			if (narg > 1)
-				xsettitle(STRESCARGREST(1), 0);
+        xsettitle(strescseq.args[1], 0);
 			return;
 		case 52:
 			if (narg > 2 && allowwindowops) {
-				dec = base64dec(STRESCARGJUST(2));
+        dec = base64dec(strescseq.args[2]);
 				if (dec) {
 					xsetsel(dec);
 					xclipcopy();
@@ -2031,14 +2030,11 @@ strhandle(void)
 			}
 			return;
 		case 4: /* color set */
-      if (narg < 3)
-        break;
-      p = STRESCARGJUST(2);
     case 10: /* foreground set */
     case 11: /* background set */
     case 12: /* cursor color */
 		  //break;
-			p = strescseq.argp[((par == 4) ? 2 : 1)];
+			p = strescseq.args[((par == 4) ? 2 : 1)];
 			/* FALLTHROUGH */
 		case 104: /* color reset, here p = NULL */
      if (par == 10) // XXX this looks janky
@@ -2048,7 +2044,7 @@ strhandle(void)
      else if (par == 12)
        j = defaultcs;
      else
-       j = (narg > 1) ? atoi(STRESCARGJUST(1)) : -1;
+       j = (narg > 1) ? atoi(strescseq.args[1]) : -1;
 			if (xsetcolorname(j, p)) {
 				if (par == 104 && narg <= 1)
 					return; /* color reset without parameter */
@@ -2064,7 +2060,7 @@ strhandle(void)
 		}
 		break;
 	case 'k': /* old title set compatibility */
-		xsettitle(strescseq.buf, 0);
+    xsettitle(strescseq.args[0], 0);
 		return;
 	case 'P': /* DCS -- Device Control String */
     /* https://gitlab.com/gnachman/iterm2/-/wikis/synchronized-updates-spec */
@@ -2089,18 +2085,19 @@ strparse(void)
 	char *p = strescseq.buf;
 
 	strescseq.narg = 0;
+  strescseq.buf[strescseq.len] = '\0';
 
 	if (*p == '\0')
 		return;
 
-	while (strescseq.narg < STR_ARG_SIZ) {
-		while ((c = *p) != ';' && c != '\0')
-			p++;
-		strescseq.argp[strescseq.narg++] = p;
-		if (c == '\0')
-			return;
-		p++;
-	}
+  while (strescseq.narg < STR_ARG_SIZ) {
+  strescseq.args[strescseq.narg++] = p;
+  while ((c = *p) != ';' && c != '\0')
+    ++p;
+  if (c == '\0')
+    return;
+  *p++ = '\0';
+  }
 }
 
 void
