@@ -1,6 +1,8 @@
 // TODO clean up this file so it is easier to find and edit
 // terms and has less janky C-isms
 
+// What about lua scripting?
+
 
 #ifndef H_CONFIG__
 #define H_CONFIG__
@@ -18,14 +20,14 @@
 /*
  * font: see http://freedesktop.org/software/fontconfig/fontconfig-user.html
  */
-static char *font = "FiraCode:pixelsize=16:antialias=true:autohint=true"; /* for ligatures */
+static char *font = "FiraCode-Regular:pixelsize=18:antialias=true:autohint=true"; /* for ligatures */
 static int borderpx = 2;
 
 /* Spare fonts */
 static char *font2[] = {
 /* "Inconsolata for Powerline:pixelsize=12:antialias=true:autoh
     int=true", */
-"Hack-Regular:pixelsize=15:antialias=true:autohint=true",
+"Hack-Regular:pixelsize=12:antialias=true:autohint=true",
 //"FiraCode:pixelsize=15:antialias=true:autohint=true",
 };
 
@@ -273,8 +275,8 @@ static Shortcut shortcuts[] = {
 	{ ControlMask,          XK_Print,       toggleprinter,  {.i =  0} },
 	{ ShiftMask,            XK_Print,       printscreen,    {.i =  0} },
 	{ XK_ANY_MOD,           XK_Print,       printsel,       {.i =  0} },
-	{ TERMMOD,              XK_Prior,       zoom,           {.f = +1} },
-	{ TERMMOD,              XK_Next,        zoom,           {.f = -1} },
+	{ TERMMOD,              XK_K,           zoom,           {.f = +1} },
+	{ TERMMOD,              XK_J,           zoom,           {.f = -1} },
 	{ TERMMOD,              XK_Home,        zoomreset,      {.f =  0} },
 	{ TERMMOD,              XK_C,           clipcopy,       {.i =  0} },
 	{ TERMMOD,              XK_V,           clippaste,      {.i =  0} },

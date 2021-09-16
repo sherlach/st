@@ -15,7 +15,7 @@ Requirements
 In order to build st you need the Xlib and Harfbuzz header files.
 You should use the xft-bgra patch if you require emoji (available
 in the AUR prebuilt or as a manual patch elsewhere. Gentoo users
-could find [this patch](https://github.com/sherlach/configs/blob/master/gentooing/patches/x11-libs/libXft/2.patch) very useful.
+could find [this patch](https://github.com/sherlach/configs/blob/master/gentooing/patches/x11-libs/libXft/2.patch) very useful).
 
 
 Installation
